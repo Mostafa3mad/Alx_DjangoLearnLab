@@ -12,6 +12,5 @@ def get_all_book_in_library(library_name):
         return books
 
 def get_librarian(name_libraian):
-    library = Library.objects.get(name=name_libraian)
-    librarian = Librarian.objects.get(name=name_libraian)
-    return librarian
+    library = Librarian.objects.get(library=name_libraian)
+    return library
