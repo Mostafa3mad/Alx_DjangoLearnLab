@@ -8,12 +8,12 @@ def get_books_by_author(author_name):
     return books
 
 def get_all_book_in_library(name_library):
-        library = Library.objects.get(name_library=name_library)
+        library = Library.objects.get(name=name_library)
         books = library.books.all()
         return books
 
 
 def get_librarian(name_libraian):
-    library = Library.objects.get(library=name_libraian)
-    librarian = Librarian.objects.get(library=name_libraian)
+    library = Library.objects.get(name=name_libraian)
+    librarian = Librarian.objects.get(name=name_libraian)
     return librarian
