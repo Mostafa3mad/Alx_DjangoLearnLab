@@ -1,6 +1,10 @@
 from .models import Author,Book,Library,Librarian
 
 
-books_by_author = Book.objects.filter(author__name="J.K. Rowling")
-books_in_library = Library.objects.get(name=library_name).books.all()
-librarian_for_library = Library.objects.get(name="Central Library").librarian
+
+def get_books_by_author(author_name):
+    try:
+        author = Author.objects.get(name=author_name)
+        return Book.objects.filter(author=author)
+    except Author.DoesNotExist:
+        return None
