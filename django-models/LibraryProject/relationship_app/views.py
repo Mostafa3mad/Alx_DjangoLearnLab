@@ -4,7 +4,7 @@ from django.views.generic.detail import DetailView
 from .models import Book
 from .models import Library
 from django.contrib.auth import login,logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView as BaseLoginView, LogoutView as BaseLogoutView
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 
 
@@ -28,36 +28,22 @@ class LibraryDetailView(DetailView):
 
 
 def register(request):
-    if request.method == "POST":
+    if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # Log in the user after registration
-            return redirect("home")  # Redirect to home page
+            login(request, user)  # Automatically log in the user after registration
+            return redirect('login')  # Redirect to login page
     else:
         form = UserCreationForm()
-
-    return render(request, "relationship_app/register.html", {"form": form})
-
-
-def login_view(request):
-    if request.method == "POST":
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            return redirect("home")  # Redirect to home after login
-    else:
-        form = AuthenticationForm()
-
-    return render(request, "relationship_app/login.html", {"form": form})
+    return render(request, 'relationship_app/register.html', {'form': form})
 
 
-def logout_view(request):
-    logout(request)
-    return redirect("home")  # Redirect to home after logout
+class LoginView(BaseLoginView):
+    template_name = 'relationship_app/login.html'
+    redirect_authenticated_user = True  # Redirect if the user is already authenticated
 
-# Protected Home Page (only logged-in users can access)
-@login_required
-def home_view(request):
-    return render(request, "relationship_app/home.html")
+# Logout View
+class LogoutView(BaseLogoutView):
+    template_name = 'relationship_app/logout.html'
+
