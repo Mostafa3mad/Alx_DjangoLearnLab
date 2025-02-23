@@ -72,9 +72,9 @@ def member_view(request):
     return render(request, 'relationship_app/member_view.html')  # ✅ Corrected path
 ##############################################################################
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from .models import Book
-
+from django.contrib.auth.decorators import permission_required
 # ✅ Secure Add Book View
 @login_required
 @permission_required('relationship_app.can_add_book', raise_exception=True)
