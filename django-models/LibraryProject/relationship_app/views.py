@@ -53,6 +53,7 @@ def is_admin(user):
 def is_librarian(user):
     return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == "Librarian"
 
+
 def is_member(user):
     return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == "Member"
 
@@ -65,8 +66,9 @@ def admin_view(request):
 
 @login_required
 @user_passes_test(is_librarian)
-def librarian_view(request):
+def librarian_view(request):  # ✅ Ensure this function name is exactly "librarian_view"
     return render(request, "relationship_app/librarian_view.html", {"role": "Librarian"})
+
 
 @login_required
 @user_passes_test(is_member)
