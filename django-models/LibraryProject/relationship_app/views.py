@@ -44,5 +44,3 @@ class LogoutView(BaseLogoutView):
     template_name = 'relationship_app/logout.html'
 
 ##############################################################################
-
-
