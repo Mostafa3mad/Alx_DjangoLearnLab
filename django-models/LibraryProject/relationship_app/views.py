@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.views.generic import DetailView, ListView, CreateView, UpdateView, DeleteView
+from django.views.generic.detail import DetailView
 from .models import Book
 from .models import Library
 
