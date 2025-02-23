@@ -12,5 +12,5 @@ def get_all_book_in_library(library_name):
         return books
 
 def get_librarian(name_libraian):
-    librarian = Librarian.objects.get(library=name_libraian)  # البحث عن أمين المكتبة بناءً على المكتبة
+    librarian = Librarian.objects.get(library=name_libraian)
     return librarian
