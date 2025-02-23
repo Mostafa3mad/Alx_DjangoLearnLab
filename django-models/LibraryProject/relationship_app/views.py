@@ -63,11 +63,13 @@ def is_librarian(user):
     try:
         return user.userprofile.role == "Librarian"
     except UserProfile.DoesNotExist:
-        return False@login_required
+        return False
 
 
+
+@login_required
 @user_passes_test(is_librarian)
-def librarian_view(request):  # ✅ Ensure this function is named "librarian_view"
+def librarian_view(request):
     return render(request, "relationship_app/librarian_view.html", {"role": "Librarian"})
 
 
