@@ -70,3 +70,40 @@ def is_member(user):
 @user_passes_test(is_member)
 def member_view(request):
     return render(request, 'relationship_app/member_view.html')  # ✅ Corrected path
+##############################################################################
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, permission_required
+from .models import Book
+
+# ✅ Secure Add Book View
+@login_required
+@permission_required('relationship_app.can_add_book', raise_exception=True)
+def add_book(request):
+    if request.method == "POST":
+        title = request.POST.get('title')
+        author_id = request.POST.get('author_id')  # Assuming author_id is sent from a form
+        book = Book.objects.create(title=title, author_id=author_id)
+        return redirect('list_books')
+    return render(request, "relationship_app/add_book.html")  # Render a simple form page
+
+# ✅ Secure Edit Book View
+@login_required
+@permission_required('relationship_app.can_change_book', raise_exception=True)
+def edit_book(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    if request.method == "POST":
+        book.title = request.POST.get('title', book.title)
+        book.author_id = request.POST.get('author_id', book.author.id)  # Keep existing author if not changed
+        book.save()
+        return redirect('list_books')
+    return render(request, "relationship_app/edit_book.html", {"book": book})
+
+# ✅ Secure Delete Book View
+@login_required
+@permission_required('relationship_app.can_delete_book', raise_exception=True)
+def delete_book(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    if request.method == "POST":
+        book.delete()
+        return redirect('list_books')
+    return render(request, "relationship_app/delete_book.html", {"book": book})
