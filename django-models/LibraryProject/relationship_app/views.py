@@ -66,8 +66,9 @@ def admin_view(request):
 
 @login_required
 @user_passes_test(is_librarian)
-def librarian_view(request):  # ✅ Ensure this function name is exactly "librarian_view"
+def librarian_view(request):  # ✅ Ensure this function is named "librarian_view"
     return render(request, "relationship_app/librarian_view.html", {"role": "Librarian"})
+
 
 
 @login_required
