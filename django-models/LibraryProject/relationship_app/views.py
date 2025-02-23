@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.views.generic.detail import DetailView
 from .models import Book
 from .models import Library
-from django.contrib.auth import login
+from django.contrib.auth import login,logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 
@@ -27,7 +27,7 @@ class LibraryDetailView(DetailView):
 
 
 
-def register(request):
+def register_view(request):
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
