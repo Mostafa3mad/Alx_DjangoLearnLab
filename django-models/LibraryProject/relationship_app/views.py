@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.views.generic.detail import DetailView
 from .models import Book
 from .models import Library
-from django.contrib.auth import login,logout
+from django.contrib.auth import login
 from django.contrib.auth.views import LoginView as BaseLoginView, LogoutView as BaseLogoutView
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 
@@ -22,20 +22,16 @@ class LibraryDetailView(DetailView):
         return context
 
 
-
-
-
-
-
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # Automatically log in the user after registration
+            login(request, user)  # Log in user after registration
             return redirect('login')  # Redirect to login page
     else:
         form = UserCreationForm()
+
     return render(request, 'relationship_app/register.html', {'form': form})
 
 
