@@ -3,6 +3,9 @@ from django.http import HttpResponse
 from django.views.generic.detail import DetailView
 from .models import Book
 from .models import Library
+from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 
 
 def list_books(request):
@@ -21,10 +24,7 @@ class LibraryDetailView(DetailView):
 
 
 
-#########################################################################
-from django.contrib.auth import login
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
+
 
 
 def register_view(request):
