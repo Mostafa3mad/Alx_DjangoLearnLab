@@ -47,6 +47,15 @@ CSRF_COOKIE_SECURE = True
 # تأكيد أن ملفات تعريف الارتباط الخاصة بالجلسة تُرسل عبر HTTPS فقط
 SESSION_COOKIE_SECURE = True
 
+SECURE_SSL_REDIRECT = True  # Redirect all HTTP requests to HTTPS
+# settings.py
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SESSION_COOKIE_SECURE = True  # التأكد من أن الكوكيز تُرسل عبر HTTPS فقط
+CSRF_COOKIE_SECURE = True  # التأكد من أن كوكيز CSRF تُرسل عبر HTTPS فقط
+X_FRAME_OPTIONS = 'DENY'
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
