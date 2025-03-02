@@ -6,7 +6,7 @@ from .models import Book  # افترض أن لديك نموذجًا يسمى Boo
 @permission_required('bookshelf.can_view', raise_exception=True)
 def book_list(request):
     books = Book.objects.all()
-    return render(request, 'bookshelf/book_list.html', {'books': books})
+    return render(request, 'book_list.html', {'books': books})
 
 
 
@@ -26,4 +26,4 @@ def example_view(request):
     else:
         form = ExampleForm()
 
-    return render(request, 'example_form.html', {'form': form})
+    return render(request, 'form_example.html', {'form': form})
