@@ -1,0 +1,9 @@
+<!-- bookshelf/templates/example_form.html -->
+
+<h1>Example Form</h1>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}  <!-- عرض الحقول باستخدام تنسيق <p> -->
+    <button type="submit">Submit</button>
+</form>
