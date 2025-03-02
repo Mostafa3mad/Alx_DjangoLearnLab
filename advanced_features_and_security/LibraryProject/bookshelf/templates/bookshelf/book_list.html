@@ -1,0 +1,40 @@
+<!-- bookshelf/templates/bookshelf/book_list.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Books List</title>
+</head>
+<body>
+
+    <h1>Books List</h1>
+
+    <!-- إضافة زر لإنشاء كتاب جديد -->
+    <a href="{% url 'create_book' %}">Add New Book</a>
+
+    <hr>
+
+    <!-- عرض قائمة الكتب -->
+    <ul>
+        {% for book in books %}
+            <li>
+                <strong>{{ book.title }}</strong> by {{ book.author }} <br>
+                <small>{{ book.description }}</small> <br>
+                <a href="{% url 'edit_book' book.id %}">Edit</a> |
+                <a href="{% url 'delete_book' book.id %}">Delete</a>
+            </li>
+        {% empty %}
+            <li>No books available.</li>
+        {% endfor %}
+    </ul>
+
+    <!-- نموذج للبحث عن الكتب (اختياري) -->
+    <form method="GET" action="{% url 'book_list' %}">
+        <input type="text" name="search" placeholder="Search books" />
+        <button type="submit">Search</button>
+    </form>
+
+</body>
+</html>
