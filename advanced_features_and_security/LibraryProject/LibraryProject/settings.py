@@ -55,6 +55,11 @@ SECURE_HSTS_PRELOAD = True
 SESSION_COOKIE_SECURE = True  # التأكد من أن الكوكيز تُرسل عبر HTTPS فقط
 CSRF_COOKIE_SECURE = True  # التأكد من أن كوكيز CSRF تُرسل عبر HTTPS فقط
 X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True  # منع المتصفح من محاولة تخمين نوع المحتوى
+SECURE_BROWSER_XSS_FILTER = True  # تمكين مرشح XSS في المتصفح
+
+
+
 
 
 INSTALLED_APPS = [
