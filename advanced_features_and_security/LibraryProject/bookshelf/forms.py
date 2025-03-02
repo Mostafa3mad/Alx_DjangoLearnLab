@@ -2,7 +2,7 @@
 from django import forms
 from .models import Book  # استيراد نموذج الكتاب
 
-class BookForm(forms.ModelForm):
+class ExampleForm(forms.ModelForm):
     class Meta:
         model = Book  # ربط النموذج بـ Book
         fields = ['title', 'author', 'description']  # الحقول التي سيتم عرضها في النموذج
