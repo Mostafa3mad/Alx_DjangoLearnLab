@@ -37,8 +37,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
+
+
+    # Local apps
     'api',
+
+
+
+    ###################################
+
+    # Third-party apps
+    'rest_framework',
+    'django_filters',
+
 ]
 
 MIDDLEWARE = [
@@ -130,6 +141,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',  # For login sessions
         'rest_framework.authentication.BasicAuthentication',  # For basic auth
     ],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly'  # Default: Auth required for write, read is public
     ]

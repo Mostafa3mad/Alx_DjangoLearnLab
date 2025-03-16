@@ -73,112 +73,30 @@ python manage.py runserver
 
 ---
 
-## **📌 الصلاحيات (Permissions)**
-- يمكن لأي **مستخدم (حتى غير المسجلين)** قراءة البيانات (`GET`).
-- لا يمكن إنشاء (`POST`) أو تحديث (`PUT`) أو حذف (`DELETE`) كتاب إلا إذا كان **المستخدم مسجلاً دخوله**.
 
-### **🔧 إعدادات الصلاحيات في `views.py`**
-```python
-from rest_framework import permissions
 
-permission_classes = [permissions.IsAuthenticated]  # 🔒 يتطلب تسجيل الدخول
-```
 
----
 
-## **📌 المصادقة والاختبار**
-### **✅ تسجيل الدخول باستخدام `Basic Auth`**
-1️⃣ **إنشاء مستخدم جديد عبر Django Admin**  
-2️⃣ استخدام `Postman` أو `cURL` لاختبار المصادقة.
+## 📌 Filtering, Searching, and Ordering in API
 
-### **✅ اختبار API باستخدام `cURL`**
-**📖 جلب جميع الكتب (متاح للجميع):**
+### ✅ Filtering
+تصفية الكتب حسب العنوان أو المؤلف أو سنة النشر:
 ```bash
-curl -X GET http://127.0.0.1:8000/api/books/
+GET /api/books/?title=Django
+GET /api/books/?author=1
+GET /api/books/?publication_year=2020
 ```
-**➕ إضافة كتاب جديد (يتطلب تسجيل الدخول):**
+
+### ✅ Searching
+البحث عن كتب تحتوي على كلمات معينة في العنوان أو اسم المؤلف:
 ```bash
-curl -X POST http://127.0.0.1:8000/api/books/create/ \
-    -H "Content-Type: application/json" \
-    -u username:password \
-    -d '{"title": "REST API with Django", "publication_year": 2022, "author": 1}'
+GET /api/books/?search=Django
 ```
-**✏️ تحديث كتاب (يتطلب تسجيل الدخول):**
+
+### ✅ Ordering
+فرز النتائج حسب العنوان أو سنة النشر:
 ```bash
-curl -X PUT http://127.0.0.1:8000/api/books/1/update/ \
-    -H "Content-Type: application/json" \
-    -u username:password \
-    -d '{"title": "Updated Book Title", "publication_year": 2023}'
+GET /api/books/?ordering=title
+GET /api/books/?ordering=-publication_year
 ```
-
----
-
-## **📌 إعدادات المشروع في `settings.py`**
-```python
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly'
-    ]
-}
 ```
-
----
-
-## **📌 توثيق الـ API باستخدام `Swagger`**
-**لتفعيل `Swagger UI` لتوثيق الـ API:**  
-1️⃣ قم بتثبيت `drf-yasg`:  
-```bash
-pip install drf-yasg
-```
-2️⃣ أضف هذا الكود إلى `api/urls.py`:
-```python
-from rest_framework.schemas import get_schema_view
-from drf_yasg.views import get_schema_view
-from drf_yasg import openapi
-from django.urls import path
-
-schema_view = get_schema_view(
-    openapi.Info(
-        title="Books API",
-        default_version='v1',
-        description="API documentation for managing books",
-    ),
-    public=True,
-)
-
-urlpatterns += [
-    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='swagger-docs'),
-]
-```
-3️⃣ افتح المتصفح على:  
-🔗 `http://127.0.0.1:8000/swagger/`
-
----
-
-## **📌 ملاحظات إضافية:**
-- يمكنك **إضافة `TokenAuthentication`** لتحسين أمان الـ API.
-- استخدم `Postman` أو `cURL` لاختبار الـ API بسهولة.
-- **إضافة `pagination` و `filtering`** سيجعل التجربة أفضل للمستخدمين.
-
-🚀 **تم تنفيذ المشروع بواسطة [اسمك]** 😃  
-🔥 **هل لديك أي استفسارات؟ لا تتردد في سؤالي!**  
-
----
-
-### **📌 5️⃣ رفع المشروع على GitHub**
-بعد كتابة ملف `README.md`، ارفع المشروع إلى GitHub:
-
-```bash
-git init
-git add .
-git commit -m "Initial commit with API documentation"
-git branch -M main
-git remote add origin https://github.com/اسم-حسابك/Alx_DjangoLearnLab.git
-git push -u origin main
-```
-
-💡 **هكذا يصبح مشروعك جاهزًا للعمل والمشاركة مع الآخرين!** 😃🚀
