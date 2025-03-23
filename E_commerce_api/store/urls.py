@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterView,ProductCreateView, AddToCartView, RemoveFromCartView
+from .views import RegisterView,ProductCreateView, AddToCartView, RemoveFromCartView,ProductSearchView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 
@@ -13,5 +13,7 @@ urlpatterns = [
     path('api/product/add/', ProductCreateView.as_view(), name='add-product'),
     path('api/cart/add/', AddToCartView.as_view(), name='add-to-cart'),
     path('api/cart/remove/', RemoveFromCartView.as_view(), name='remove-from-cart'),
+    # Search
+    path('search/', ProductSearchView.as_view(), name='product-search'),
 
 ]

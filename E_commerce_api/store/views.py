@@ -50,3 +50,17 @@ class RemoveFromCartView(APIView):
         cart = Cart.objects.get(user=request.user)
         CartItem.objects.filter(cart=cart, product_id=product_id).delete()
         return Response({"message": "Product removed from cart"})
+
+class ProductSearchView(APIView):
+    def get(self, request):
+        name = request.GET.get('name')
+        category = request.GET.get('category')
+        products = Product.objects.all()
+
+        if name:
+            products = products.filter(name__icontains=name)
+        if category:
+            products = products.filter(category__name__icontains=category)
+
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data)
