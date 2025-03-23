@@ -9,6 +9,9 @@ from django.urls import reverse_lazy
 from .models import Post, Comment
 from django.db.models import Q
 from django.shortcuts import render
+from django.views.generic import ListView
+from taggit.models import Tag
+
 
 def register(request):
     if request.method == 'POST':
@@ -138,3 +141,16 @@ def search_posts(request):
         'query': query,
     })
 
+class PostByTagListView(ListView):
+    model = Post
+    template_name = 'blog/posts_by_tag.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        self.tag = get_object_or_404(Tag, slug=self.kwargs.get('tag_slug'))
+        return Post.objects.filter(tags__in=[self.tag])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tag'] = self.tag
+        return context
