@@ -40,6 +40,10 @@ INSTALLED_APPS = [
 
 
 
+    #third party
+    'rest_framework',
+
+    #apps
     'store',
 
 ]
