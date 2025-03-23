@@ -40,9 +40,8 @@ INSTALLED_APPS = [
 
 
 
-
-
-
+    #tool
+    'taggit',
 
     #app
     'blog',
