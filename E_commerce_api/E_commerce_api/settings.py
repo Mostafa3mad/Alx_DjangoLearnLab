@@ -34,16 +34,18 @@ SECRET_KEY = 'django-insecure-bzp7nuc$8hde1+m+de3dzd%pzm_o=80(&zmz)%qa*dwva2r$%l
 DEBUG = True
 
 # Add your production domain here
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'your-domain.com').split(',')
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 # Security settings
 SECURE_BROWSER_XSS_FILTER = True
 X_FRAME_OPTIONS = 'DENY'
 SECURE_CONTENT_TYPE_NOSNIFF = True
-SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = False
 # Use secure cookies in production
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+
+
 # Static files and media settings
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -60,8 +62,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-
 
     #third party
     'rest_framework',
