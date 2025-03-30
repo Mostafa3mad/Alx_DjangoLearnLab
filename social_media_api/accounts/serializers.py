@@ -41,3 +41,9 @@ class LoginSerializer(serializers.Serializer):
             return {'user': user, 'token': token.key}
 
         raise serializers.ValidationError('Incorrect username or password')
+
+
+class FollowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'bio', 'profile_picture']
