@@ -44,10 +44,11 @@ INSTALLED_APPS = [
     #app
     'accounts',
     'posts',
+    'notifications',
 
 
-    #third_app
-    #rest_framework
+    #third_party
+        #rest_framework
 
 ]
 
