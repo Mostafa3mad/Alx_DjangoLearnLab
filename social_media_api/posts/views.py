@@ -1,4 +1,4 @@
-from rest_framework import viewsets, permissions, filters
+from rest_framework import viewsets, permissions, filters,generics
 from rest_framework.pagination import PageNumberPagination
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
@@ -39,3 +39,17 @@ class CommentViewSet(viewsets.ModelViewSet):
         if post_id:
             return Comment.objects.filter(post_id=post_id).order_by('-created_at')
         return Comment.objects.all().order_by('-created_at')
+
+
+
+class FeedView(generics.ListAPIView):
+    """API to get posts from followed users."""
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # Get the list of followed users
+        following_users = self.request.user.following.all()
+
+        # Fetch posts from followed users ordered by creation date
+        return Post.objects.filter(author__in=following_users).order_by('-created_at')
