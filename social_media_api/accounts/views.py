@@ -3,7 +3,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
-from .models import User
+from .models import User as CustomUser
 from .serializers import UserSerializer, RegisterSerializer, LoginSerializer,FollowSerializer
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
@@ -32,15 +32,18 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
 
 class FollowUserView(generics.GenericAPIView):
-    queryset = User.objects.all()
+    """API to follow another user."""
+    queryset = CustomUser.objects.all()
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, user_id):
         user_to_follow = get_object_or_404(self.get_queryset(), id=user_id)
 
+        # Prevent self-following
         if user_to_follow == request.user:
             return Response({'detail': 'You cannot follow yourself.'}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Check if the user is already followed
         if request.user.is_following(user_to_follow):
             return Response({'detail': f'You are already following {user_to_follow.username}.'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -50,15 +53,18 @@ class FollowUserView(generics.GenericAPIView):
 
 
 class UnfollowUserView(generics.GenericAPIView):
-    queryset = User.objects.all()
+    """API to unfollow another user."""
+    queryset = CustomUser.objects.all()
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, user_id):
         user_to_unfollow = get_object_or_404(self.get_queryset(), id=user_id)
 
+        # Prevent self-unfollowing
         if user_to_unfollow == request.user:
             return Response({'detail': 'You cannot unfollow yourself.'}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Check if the user is not followed
         if not request.user.is_following(user_to_unfollow):
             return Response({'detail': f'You are not following {user_to_unfollow.username}.'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -68,6 +74,7 @@ class UnfollowUserView(generics.GenericAPIView):
 
 
 class FollowersListView(generics.ListAPIView):
+    """API to get the list of followers."""
     serializer_class = FollowSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -76,6 +83,7 @@ class FollowersListView(generics.ListAPIView):
 
 
 class FollowingListView(generics.ListAPIView):
+    """API to get the list of users the authenticated user is following."""
     serializer_class = FollowSerializer
     permission_classes = [permissions.IsAuthenticated]
 
