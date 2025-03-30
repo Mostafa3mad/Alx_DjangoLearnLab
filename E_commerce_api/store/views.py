@@ -5,7 +5,7 @@ from .serializers import RegisterSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics, permissions
 from .models import Product, Cart, CartItem
-from .serializers import ProductSerializer, CartItemSerializer
+from .serializers import ProductSerializer, CartItemSerializer, UpdateUserSerializer, ChangePasswordSerializer
 
 
 
@@ -33,14 +33,19 @@ class AddToCartView(APIView):
     def post(self, request):
         product_id = request.data.get("product_id")
         quantity = request.data.get("quantity", 1)
-        product = Product.objects.get(id=product_id)
+
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return Response({"error": "prodect is not avalbile"}, status=status.HTTP_404_NOT_FOUND)
 
         cart, created = Cart.objects.get_or_create(user=request.user)
         item, created = CartItem.objects.get_or_create(cart=cart, product=product)
-        item.quantity = quantity
-        item.save()
-        return Response({"message": "Product added to cart"})
 
+        item.quantity += int(quantity)
+        item.save()
+
+        return Response({"message": "successful add", "quantity": item.quantity})
 
 class RemoveFromCartView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -64,3 +69,31 @@ class ProductSearchView(APIView):
 
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data)
+
+
+class UserProfileView(generics.RetrieveUpdateAPIView):
+    serializer_class = UpdateUserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+from django.contrib.auth import update_session_auth_hash
+
+class ChangePasswordView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        serializer = ChangePasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            user = request.user
+            if not user.check_password(serializer.validated_data['old_password']):
+                return Response({'error': 'old is wronge'}, status=status.HTTP_400_BAD_REQUEST)
+
+            user.set_password(serializer.validated_data['new_password'])
+            user.save()
+            update_session_auth_hash(request, user)
+
+            return Response({'success': 'sessful change update '}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
