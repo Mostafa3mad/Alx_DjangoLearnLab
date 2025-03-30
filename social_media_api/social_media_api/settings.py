@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 
     #app
     'accounts',
+    'posts',
 
 
     #third_app
