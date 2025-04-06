@@ -5,7 +5,7 @@ from .serializers import RegisterSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics, permissions
 from .models import Product, Cart, CartItem
-from .serializers import ProductSerializer, CartItemSerializer, UpdateUserSerializer, ChangePasswordSerializer, LogoutSerializer
+from .serializers import ProductSerializer, CartItemSerializer, UpdateUserSerializer, ChangePasswordSerializer, LogoutSerializer, AddToCartSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from drf_yasg.utils import swagger_auto_schema
@@ -34,27 +34,43 @@ class ProductCreateView(generics.CreateAPIView):
 
 class AddToCartView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    @swagger_auto_schema(request_body=AddToCartSerializer)
 
     def post(self, request):
-        product_id = request.data.get("product_id")
-        quantity = request.data.get("quantity", 1)
+        # استخدام AddToCartSerializer للتحقق من المدخلات
+        serializer = AddToCartSerializer(data=request.data)
 
-        try:
-            product = Product.objects.get(id=product_id)
-        except Product.DoesNotExist:
-            return Response({"error": "prodect is not avalbile"}, status=status.HTTP_404_NOT_FOUND)
+        if serializer.is_valid():
+            product_id = serializer.validated_data.get("product_id")
+            quantity = serializer.validated_data.get("quantity", 1)
 
-        cart, created = Cart.objects.get_or_create(user=request.user)
-        item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+            try:
+                product = Product.objects.get(id=product_id)
+            except Product.DoesNotExist:
+                return Response({"error": "Product is not available"}, status=status.HTTP_404_NOT_FOUND)
 
-        item.quantity += int(quantity)
-        item.save()
+            # الحصول أو إنشاء سلة المستخدم
+            cart, created = Cart.objects.get_or_create(user=request.user)
+            # الحصول أو إنشاء عنصر السلة
+            item, created = CartItem.objects.get_or_create(cart=cart, product=product)
 
-        return Response({"message": "successful add", "quantity": item.quantity})
+            item.quantity += quantity  # إضافة الكمية الجديدة
+            item.save()
+
+            return Response({
+                "message": "Product successfully added to the cart",
+                "quantity": item.quantity
+            }, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class RemoveFromCartView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('product_id', openapi.IN_QUERY, description="ID of the product to remove from cart", type=openapi.TYPE_INTEGER)
+        ]
+    )
     def post(self, request):
         product_id = request.data.get("product_id")
         cart = Cart.objects.get(user=request.user)

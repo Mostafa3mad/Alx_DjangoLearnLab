@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import Product, Cart, CartItem
+from .models import Product, Cart, CartItem, Category
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, style={'input_type': 'password'})  # Hide the password in input
@@ -32,6 +32,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 class ProductSerializer(serializers.ModelSerializer):
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
+
     class Meta:
         model = Product
         fields = ['id', 'name', 'description', 'price', 'category', 'stock_quantity']
@@ -73,4 +75,14 @@ class LogoutSerializer(serializers.Serializer):
     def validate_refresh(self, value):
         if len(value) < 1:
             raise serializers.ValidationError("The refresh token cannot be empty.")
+        return value
+
+
+class AddToCartSerializer(serializers.Serializer):
+    product_id = serializers.IntegerField(required=True)  # ID المنتج
+    quantity = serializers.IntegerField(required=False, default=1)  # الكمية (افتراضيًا 1)
+
+    def validate_quantity(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Quantity must be a positive integer.")
         return value
