@@ -5,11 +5,16 @@ from .serializers import RegisterSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics, permissions
 from .models import Product, Cart, CartItem
-from .serializers import ProductSerializer, CartItemSerializer, UpdateUserSerializer, ChangePasswordSerializer
-
+from .serializers import ProductSerializer, CartItemSerializer, UpdateUserSerializer, ChangePasswordSerializer, LogoutSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated,AllowAny
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 
 class RegisterView(APIView):
+    permission_classes = [AllowAny]
+    @swagger_auto_schema(request_body=RegisterSerializer)
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
@@ -22,7 +27,7 @@ class ProductCreateView(generics.CreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticated]
-
+    @swagger_auto_schema(request_body=ProductSerializer)
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
@@ -57,16 +62,31 @@ class RemoveFromCartView(APIView):
         return Response({"message": "Product removed from cart"})
 
 class ProductSearchView(APIView):
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('name', openapi.IN_QUERY, description="Product name", type=openapi.TYPE_STRING),
+            openapi.Parameter('category', openapi.IN_QUERY, description="Product category", type=openapi.TYPE_STRING),
+            openapi.Parameter('price_min', openapi.IN_QUERY, description="Minimum price", type=openapi.TYPE_NUMBER),
+            openapi.Parameter('price_max', openapi.IN_QUERY, description="Maximum price", type=openapi.TYPE_NUMBER),
+        ]
+    )
     def get(self, request):
         name = request.GET.get('name')
         category = request.GET.get('category')
         products = Product.objects.all()
-
+        price_min = request.GET.get('price_min', None)
+        price_max = request.GET.get('price_max', None)
         if name:
             products = products.filter(name__icontains=name)
+
         if category:
             products = products.filter(category__name__icontains=category)
 
+        if price_min:
+            products = products.filter(price__gte=price_min)
+
+        if price_max:
+            products = products.filter(price__lte=price_max)
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data)
 
@@ -83,6 +103,9 @@ from django.contrib.auth import update_session_auth_hash
 class ChangePasswordView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+
+    @swagger_auto_schema(request_body=ChangePasswordSerializer)
+
     def post(self, request):
         serializer = ChangePasswordSerializer(data=request.data)
         if serializer.is_valid():
@@ -97,3 +120,21 @@ class ChangePasswordView(APIView):
             return Response({'success': 'sessful change update '}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+    @swagger_auto_schema(request_body=LogoutSerializer)
+    def post(self, request):
+        try:
+            refresh_token = request.data.get('refresh')
+            if not refresh_token:
+                return Response({'error':'refresh is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+            return Response({"detail": "Successfully logged out"}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": "Invalid token or other issue occurred", "details": str(e)}, status=status.HTTP_400_BAD_REQUEST)
